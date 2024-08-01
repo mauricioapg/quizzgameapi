@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: my-api
+    env: java
+    plan: free
+    buildCommand: "./mvnw clean install"
+    startCommand: "java -jar target/quizzgameapi-0.0.1-SNAPSHOT"
