@@ -2,6 +2,7 @@ package com.quizzgameapi.service;
 
 import com.quizzgameapi.dto.CategoryRequestDTO;
 import com.quizzgameapi.dto.CategoryResponseDTO;
+import com.quizzgameapi.exception.CategoryException;
 import com.quizzgameapi.model.Category;
 import com.quizzgameapi.repository.CategoryRepository;
 import com.quizzgameapi.repository.QuestionRepository;
@@ -37,11 +38,11 @@ public class CategoryService {
         return listCategoryResponseDTO;
     }
 
-    public CategoryResponseDTO findByIdCategory(String idCategory) throws Exception {
+    public CategoryResponseDTO findByIdCategory(String idCategory) throws CategoryException {
         Optional<Category> category = categoryRepository.findByIdCategory(idCategory);
 
         if(!category.isPresent()){
-            throw new Exception("Nenhuma categoria encontrada com esse id: " + idCategory);
+            throw new CategoryException("Nenhuma categoria encontrada com esse id: " + idCategory);
         }
 
         CategoryResponseDTO objResponse = new CategoryResponseDTO();
@@ -51,7 +52,7 @@ public class CategoryService {
         return objResponse;
     }
 
-    public Category createCategory(CategoryRequestDTO categoryRequestDTO) throws Exception{
+    public Category createCategory(CategoryRequestDTO categoryRequestDTO) throws CategoryException{
 
         Category category = new Category();
 
@@ -60,22 +61,21 @@ public class CategoryService {
 
         List<Category> categoriesFound = categoryRepository.findAllByDesc(category.getDesc());
 
-        if(categoriesFound.isEmpty()){
-            categoryRepository.save(category);
+        if(!categoriesFound.isEmpty()){
+            throw new CategoryException("Já existe uma categoria com essa descrição: " + categoryRequestDTO.getDesc());
         }
-        else{
-            throw new Exception("Já existe uma categoria com essa descrição: " + categoryRequestDTO.getDesc());
-        }
+
+        categoryRepository.save(category);
 
         return category;
     }
 
-    public void updateCategory(String idCategory, CategoryRequestDTO categoryRequestDTO) throws Exception {
+    public void updateCategory(String idCategory, CategoryRequestDTO categoryRequestDTO) throws CategoryException {
 
         Optional<Category> category = categoryRepository.findByIdCategory(idCategory);
 
         if(!category.isPresent()){
-            throw new Exception("Nenhuma categoria encontrada com esse id: " + idCategory);
+            throw new CategoryException("Nenhuma categoria encontrada com esse id: " + idCategory);
         }
 
         category.get().setDesc(categoryRequestDTO.getDesc());
@@ -83,12 +83,12 @@ public class CategoryService {
         categoryRepository.save(category.get());
     }
 
-    public void deleteCategoryByIdCategory(String idCategory) throws Exception {
+    public void deleteCategoryByIdCategory(String idCategory) throws CategoryException {
 
         Optional<Category> category = categoryRepository.findByIdCategory(idCategory);
 
         if(!category.isPresent()){
-            throw new Exception("Nenhuma categoria encontrada com esse id: " + idCategory);
+            throw new CategoryException("Nenhuma categoria encontrada com esse id: " + idCategory);
         }
 
         categoryRepository.delete(category.get());

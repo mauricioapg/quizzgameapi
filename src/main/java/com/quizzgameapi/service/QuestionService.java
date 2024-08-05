@@ -2,6 +2,7 @@ package com.quizzgameapi.service;
 
 import com.quizzgameapi.dto.QuestionRequestDTO;
 import com.quizzgameapi.dto.QuestionResponseDTO;
+import com.quizzgameapi.exception.QuestionException;
 import com.quizzgameapi.model.Category;
 import com.quizzgameapi.model.Question;
 import com.quizzgameapi.repository.CategoryRepository;
@@ -45,11 +46,11 @@ public class QuestionService {
         return listCategoryResponseDTO;
     }
 
-    public QuestionResponseDTO findByIdQuestion(String idQuestion) throws Exception {
+    public QuestionResponseDTO findByIdQuestion(String idQuestion) throws QuestionException {
         Optional<Question> question = questionRepository.findByIdQuestion(idQuestion);
 
         if(!question.isPresent()){
-            throw new Exception("Nenhuma pergunta encontrada com esse id: " + idQuestion);
+            throw new QuestionException("Nenhuma pergunta encontrada com esse id: " + idQuestion);
         }
 
         Category categoryFound = categoryRepository.findOneByIdCategory(question.get().getCategory());
@@ -112,14 +113,14 @@ public class QuestionService {
         return objResponse;
     }
 
-    public void updateQuestion(String idQuestion, QuestionRequestDTO questionRequestDTO) throws Exception {
+    public void updateQuestion(String idQuestion, QuestionRequestDTO questionRequestDTO) throws QuestionException {
 
             Optional<Question> question = questionRepository.findByIdQuestion(idQuestion);
 
             List<Category> categoryList = categoryRepository.findAllByDesc(questionRequestDTO.getCategory());
 
             if(!question.isPresent()){
-                throw new Exception("Nenhuma pergunta encontrada com esse id: " + idQuestion);
+                throw new QuestionException("Nenhuma pergunta encontrada com esse id: " + idQuestion);
             }
 
             question.get().setTitle(questionRequestDTO.getTitle());
@@ -131,22 +132,22 @@ public class QuestionService {
             questionRepository.save(question.get());
     }
 
-    public void deleteQuestionByIdQuestion(String idQuestion) throws Exception {
+    public void deleteQuestionByIdQuestion(String idQuestion) throws QuestionException {
 
             Optional<Question> question = questionRepository.findByIdQuestion(idQuestion);
 
             if(!question.isPresent()){
-                throw new Exception("Nenhuma pergunta encontrada com esse id: " + idQuestion);
+                throw new QuestionException("Nenhuma pergunta encontrada com esse id: " + idQuestion);
             }
 
             questionRepository.delete(question.get());
     }
 
-    public List<String> findAlternativesByIdQuestion(String idQuestion) throws Exception {
+    public List<String> findAlternativesByIdQuestion(String idQuestion) throws QuestionException {
         Optional<Question> question = questionRepository.findByIdQuestion(idQuestion);
 
         if(!question.isPresent()){
-            throw new Exception("Nenhuma pergunta encontrada com esse id: " + idQuestion);
+            throw new QuestionException("Nenhuma pergunta encontrada com esse id: " + idQuestion);
         }
 
         return question.get().getAlternatives();

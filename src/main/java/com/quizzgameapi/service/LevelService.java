@@ -2,6 +2,7 @@ package com.quizzgameapi.service;
 
 import com.quizzgameapi.dto.LevelRequestDTO;
 import com.quizzgameapi.dto.LevelResponseDTO;
+import com.quizzgameapi.exception.LevelException;
 import com.quizzgameapi.model.Level;
 import com.quizzgameapi.repository.LevelRepository;
 import com.quizzgameapi.repository.QuestionRepository;
@@ -37,11 +38,11 @@ public class LevelService {
         return listLevelResponseDTO;
     }
 
-    public LevelResponseDTO findByIdLevel(String idLevel) throws Exception {
+    public LevelResponseDTO findByIdLevel(String idLevel) throws LevelException {
         Optional<Level> level = levelRepository.findByIdLevel(idLevel);
 
         if(!level.isPresent()){
-            throw new Exception("Nenhum nível encontrado com esse id: " + idLevel);
+            throw new LevelException("Nenhum nível encontrado com esse id: " + idLevel);
         }
 
         LevelResponseDTO objResponse = new LevelResponseDTO();
@@ -51,11 +52,11 @@ public class LevelService {
         return objResponse;
     }
 
-    public LevelResponseDTO findByDesc(String desc) throws Exception {
+    public LevelResponseDTO findByDesc(String desc) throws LevelException {
         Optional<Level> level = levelRepository.findByDesc(desc);
 
         if(!level.isPresent()){
-            throw new Exception("Nenhum nível encontrado com essa descrição: " + desc);
+            throw new LevelException("Nenhum nível encontrado com essa descrição: " + desc);
         }
 
         LevelResponseDTO objResponse = new LevelResponseDTO();
@@ -65,7 +66,7 @@ public class LevelService {
         return objResponse;
     }
 
-    public Level createLevel(LevelRequestDTO levelRequestDTO) throws Exception{
+    public Level createLevel(LevelRequestDTO levelRequestDTO) throws LevelException{
 
         Level level = new Level();
 
@@ -74,22 +75,21 @@ public class LevelService {
 
         List<Level> levelsFound = levelRepository.findAllByDesc(level.getDesc());
 
-        if(levelsFound.isEmpty()){
-            levelRepository.save(level);
+        if(!levelsFound.isEmpty()){
+            throw new LevelException("Já existe um nível com essa descrição: " + levelRequestDTO.getDesc());
         }
-        else{
-            throw new Exception("Já existe um nível com essa descrição: " + levelRequestDTO.getDesc());
-        }
+
+        levelRepository.save(level);
 
         return level;
     }
 
-    public void updateLevel(String idLevel, LevelRequestDTO levelRequestDTO) throws Exception {
+    public void updateLevel(String idLevel, LevelRequestDTO levelRequestDTO) throws LevelException {
 
         Optional<Level> level = levelRepository.findByIdLevel(idLevel);
 
         if(!level.isPresent()){
-            throw new Exception("Nenhum nível encontrado com esse id: " + idLevel);
+            throw new LevelException("Nenhum nível encontrado com esse id: " + idLevel);
         }
 
         level.get().setDesc(levelRequestDTO.getDesc());
@@ -97,12 +97,12 @@ public class LevelService {
         levelRepository.save(level.get());
     }
 
-    public void deleteLevelByIdLevel(String idLevel) throws Exception {
+    public void deleteLevelByIdLevel(String idLevel) throws LevelException {
 
         Optional<Level> level = levelRepository.findByIdLevel(idLevel);
 
         if(!level.isPresent()){
-            throw new Exception("Nenhum nível encontrado com esse id: " + idLevel);
+            throw new LevelException("Nenhum nível encontrado com esse id: " + idLevel);
         }
 
         levelRepository.delete(level.get());

@@ -15,4 +15,6 @@ public interface CategoryRepository extends MongoRepository<Category, ObjectId> 
     Category findOneByIdCategory(String idCategory);
     List<Category> findAllByDesc(String desc);
 
+    Boolean existsByDesc(String desc);
+
 }
