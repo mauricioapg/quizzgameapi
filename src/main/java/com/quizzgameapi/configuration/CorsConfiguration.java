@@ -11,6 +11,7 @@ public class CorsConfiguration implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Permite CORS em todos os endpoints
                 .allowedOrigins("http://localhost:4200") // Permite requisições de localhost:4200
+                .allowedOrigins("https://quizzgameapi-ji6nrrlm7q-uc.a.run.app") // Permite requisições de localhost:4200
                 .allowedOrigins("https://adminquizzgame.vercel.app/")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Métodos permitidos
                 .allowedHeaders("*"); // Permite todos os cabeçalhos
