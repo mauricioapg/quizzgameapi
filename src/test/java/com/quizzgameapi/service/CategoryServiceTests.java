@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,12 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class CategoryServiceTests {
+
+	String fileName = "example.txt";
+	String contentType = "text/plain";
+	byte[] content = "This is a sample content".getBytes();
+
+	MockMultipartFile file = new MockMultipartFile(fileName, fileName, contentType, content);
 
 	Category category;
 

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -40,7 +41,10 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createCategory(@RequestBody CategoryRequestDTO categoryRequestDTO, UriComponentsBuilder uriBuilder){
+    public ResponseEntity<?> createCategory(
+            @RequestBody CategoryRequestDTO categoryRequestDTO,
+            UriComponentsBuilder uriBuilder
+    ){
         System.out.println("criando nova categoria");
 
         try {

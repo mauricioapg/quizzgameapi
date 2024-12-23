@@ -8,6 +8,7 @@ import com.quizzgameapi.repository.CategoryRepository;
 import com.quizzgameapi.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ public class CategoryService {
             CategoryResponseDTO obj = new CategoryResponseDTO();
             obj.setIdCategory(category.getIdCategory());
             obj.setDesc(category.getDesc());
+            obj.setImage(category.getImage());
 
             listCategoryResponseDTO.add(obj);
         }));
@@ -48,6 +50,7 @@ public class CategoryService {
         CategoryResponseDTO objResponse = new CategoryResponseDTO();
         objResponse.setIdCategory(category.get().getIdCategory());
         objResponse.setDesc(category.get().getDesc());
+        objResponse.setImage(category.get().getImage());
 
         return objResponse;
     }
@@ -58,11 +61,12 @@ public class CategoryService {
 
         category.setIdCategory(UUID.randomUUID().toString());
         category.setDesc(categoryRequestDTO.getDesc());
+        category.setImage(categoryRequestDTO.getImage());
 
         List<Category> categoriesFound = categoryRepository.findAllByDesc(category.getDesc());
 
         if(!categoriesFound.isEmpty()){
-            throw new CategoryException("Já existe uma categoria com essa descrição: " + categoryRequestDTO.getDesc());
+            throw new CategoryException("Já existe uma categoria com essa descrição:  " + categoryRequestDTO.getDesc());
         }
 
         categoryRepository.save(category);
@@ -75,10 +79,11 @@ public class CategoryService {
         Optional<Category> category = categoryRepository.findByIdCategory(idCategory);
 
         if(!category.isPresent()){
-            throw new CategoryException("Nenhuma categoria encontrada com esse id: " + idCategory);
+            throw new CategoryException("Nenhuma categoria encontrada com esse id:  " + idCategory);
         }
 
         category.get().setDesc(categoryRequestDTO.getDesc());
+        category.get().setImage(categoryRequestDTO.getImage());
 
         categoryRepository.save(category.get());
     }
