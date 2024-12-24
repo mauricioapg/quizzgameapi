@@ -5,15 +5,15 @@ import com.quizzgameapi.dto.QuestionResponseDTO;
 import com.quizzgameapi.exception.QuestionException;
 import com.quizzgameapi.model.Category;
 import com.quizzgameapi.model.Question;
+import com.quizzgameapi.model.User;
 import com.quizzgameapi.repository.CategoryRepository;
 import com.quizzgameapi.repository.QuestionRepository;
+import com.quizzgameapi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import javax.annotation.Nullable;
+import java.util.*;
 
 @Service
 public class QuestionService {
@@ -23,6 +23,9 @@ public class QuestionService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public List<QuestionResponseDTO> listAllQuestions(){
         List<Question> questions = questionRepository.findAll();
@@ -62,6 +65,47 @@ public class QuestionService {
         objResponse.setLevel(question.get().getLevel());
         objResponse.setAlternatives(question.get().getAlternatives());
         objResponse.setAnswer(question.get().getAnswer());
+
+        return objResponse;
+    }
+
+    public QuestionResponseDTO findOneByCategory(
+            String idCategory,
+            String idUser,
+            @Nullable String idQuestionIgnore
+    ) throws QuestionException {
+        List<Question> questions = questionRepository.findAllByCategory(idCategory);
+
+        //Embaralha a lista
+        Collections.shuffle(questions);
+
+        Optional<User> userFound = userRepository.findByIdUser(idUser);
+
+        // Filtra a lista ignorando a questão informada
+        if(idQuestionIgnore != null){
+            questions = questions.stream().filter((q) -> !Objects.equals(q.getIdQuestion(), idQuestionIgnore)).toList();
+        }
+
+        // Filtra a lista ignorando as questões ja respondidas pelo usuário
+        questions = questions.stream().filter((q) ->
+                !userFound.get().getQuestionsAnswered().contains(q.getIdQuestion())).toList();
+
+        //Obtém a primeira pergunta da lista embaralhada
+        Optional<Question> questionFound = questions.stream().findFirst();
+
+        if(questionFound.isEmpty()){
+            throw new QuestionException("Nenhuma pergunta encontrada com essa categoria: " + idCategory);
+        }
+
+        Category categoryFound = categoryRepository.findOneByIdCategory(questionFound.get().getCategory());
+
+        QuestionResponseDTO objResponse = new QuestionResponseDTO();
+        objResponse.setIdQuestion(questionFound.get().getIdQuestion());
+        objResponse.setTitle(questionFound.get().getTitle());
+        objResponse.setCategory(categoryFound.getDesc());
+        objResponse.setLevel(questionFound.get().getLevel());
+        objResponse.setAlternatives(questionFound.get().getAlternatives());
+        objResponse.setAnswer(questionFound.get().getAnswer());
 
         return objResponse;
     }

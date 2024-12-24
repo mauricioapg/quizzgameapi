@@ -12,7 +12,9 @@ import java.util.Optional;
 public interface QuestionRepository extends MongoRepository<Question, ObjectId> {
 
     Optional<Question> findByIdQuestion(String idQuestion);
+
     List<Question> findAllByCategory(String idCategory);
+
     List<Question> findAllByLevel(String idLevel);
 
 }

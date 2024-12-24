@@ -38,6 +38,26 @@ public class QuestionController {
         }
     }
 
+    @GetMapping("category/{idCategory}/user/{idUser}")
+    public ResponseEntity<?> findOneByCategory(
+            @PathVariable String idCategory,
+            @PathVariable String idUser,
+            @RequestParam(required = false) String idQuestionIgnore
+    ){
+        System.out.println("resgatando pergunta por categoria excluindo a anterior");
+
+        try {
+            QuestionResponseDTO questionResponseDTO = questionService.findOneByCategory(
+                    idCategory,
+                    idUser,
+                    idQuestionIgnore
+            );
+            return ResponseEntity.ok().body(questionResponseDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
     @GetMapping("id-question/{id}")
     public ResponseEntity<?> findAlternativesByIdQuestion(@PathVariable String id){
         System.out.println("resgatando alternativas por idQuestion: " + id);
